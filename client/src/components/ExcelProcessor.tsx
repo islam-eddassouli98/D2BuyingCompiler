@@ -113,7 +113,7 @@ export default function ExcelProcessor() {
         formData.append("import", importFile.file);
 
         try {
-            const res = await fetch("http://localhost:5000/api/process-excel", {
+            const res = await fetch("https://d2buyingcompiler.onrender.com/api/process-excel", {
                 method: "POST",
                 body: formData,
             });
