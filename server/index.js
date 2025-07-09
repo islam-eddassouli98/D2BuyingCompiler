@@ -10,22 +10,24 @@ app.use(cors());
 app.use(fileUpload());
 
 app.post("/api/process-excel", async (req, res) => {
-    if (!req.files || !req.files.template || !req.files.import) {
-      return res.status(400).send("Both template and import files are required.");
-    }
-  
-    const uploadsDir = path.join(__dirname, "uploads");
-    const outputsDir = path.join(__dirname, "outputs");
-  
-    fs.mkdirSync(uploadsDir, { recursive: true });
-    fs.mkdirSync(outputsDir, { recursive: true });
-  
-    const templateFile = req.files.template;
-    const importFile = req.files.import;
-  
-    const templatePath = path.join(uploadsDir, templateFile.name);
-    const importPath = path.join(uploadsDir, importFile.name);
-    const outputPath = path.join(outputsDir, "TEMPLATE_Hyperoom_compilato.xlsx");
+  if (!req.files || !req.files.template || !req.files.import) {
+    return res.status(400).send("Both template and import files are required.");
+  }
+
+  const uploadsDir = path.join(__dirname, "uploads");
+  const outputsDir = path.join(__dirname, "outputs");
+
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  fs.mkdirSync(outputsDir, { recursive: true });
+
+  const templateFile = req.files.template;
+  const importFile = req.files.import;
+
+  const templatePath = path.join(uploadsDir, templateFile.name);
+  const importPath = path.join(uploadsDir, importFile.name);
+  const outputPath = path.join(outputsDir, "TEMPLATE_Hyperoom_compilato.xlsx");
+
+  const isWoman = req.body.isWoman === "true"; // 👈 checkbox dal frontend
 
   try {
     await templateFile.mv(templatePath);
@@ -34,7 +36,7 @@ app.post("/api/process-excel", async (req, res) => {
     const templateWb = await XlsxPopulate.fromFileAsync(templatePath);
     const importWb = await XlsxPopulate.fromFileAsync(importPath);
 
-    const templateSheet = templateWb.sheets()[0]; 
+    const templateSheet = templateWb.sheets()[0];
     const importSheet = importWb.sheets()[0];
 
     const headers = [];
@@ -49,7 +51,7 @@ app.post("/api/process-excel", async (req, res) => {
     const idxModel = headers.indexOf("Model") + 1;
     const idxFabric = headers.indexOf("Fabric") + 1;
     const idxColor = headers.indexOf("Color Code") + 1;
-    const idxScale = 5;
+    const idxScale = 5; // usually in E col
     const sizeStart = 6;
 
     const lastRow = importSheet.usedRange().endCell().rowNumber();
@@ -72,7 +74,20 @@ app.post("/api/process-excel", async (req, res) => {
         sizes.push(importSheet.cell(r, c).value());
       }
 
-      importMap.set(sku, { sizes, isNumericScale });
+      // Se donna, parte da taglia 34
+      let startIndex = 0;
+      if (isWoman) {
+        for (let i = 0; i < sizes.length; i++) {
+          const header = importSheet.cell(5, sizeStart + i).value()?.toString();
+          if (header?.trim() === "34") {
+            startIndex = i;
+            break;
+          }
+        }
+      }
+
+      const actualSizes = sizes.slice(startIndex);
+      importMap.set(sku, { sizes: actualSizes, isNumericScale });
     }
 
     const templateStartRow = 8;
