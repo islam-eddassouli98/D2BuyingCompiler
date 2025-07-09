@@ -35,6 +35,8 @@ export default function ExcelProcessor() {
     const [isProcessed, setIsProcessed] = useState(false);
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const [dragOver, setDragOver] = useState<string | null>(null);
+    const [isWoman, setIsWoman] = useState(false);
+
 
     const addLog = (message: string, type: "info" | "success" | "error" = "info") => {
         const timestamp = new Date().toLocaleTimeString();
@@ -114,6 +116,7 @@ export default function ExcelProcessor() {
 
         try {
             const res = await fetch("https://d2buyingcompiler.onrender.com/api/process-excel", {
+            // const res = await fetch("https://d2buyingcompiler.onrender.com/api/process-excel", {
                 method: "POST",
                 body: formData,
             });
@@ -203,6 +206,20 @@ export default function ExcelProcessor() {
                     Download Example Import
                 </Button>
             </div>
+            {/* Checkbox Donna */}
+<div className="flex items-center gap-2">
+  <input
+    id="isWoman"
+    type="checkbox"
+    className="accent-black w-4 h-4"
+    checked={isWoman}
+    onChange={() => setIsWoman((prev) => !prev)}
+  />
+  <label htmlFor="isWoman" className="text-sm text-gray-800">
+    Import Donna (partenza taglie da 34)
+  </label>
+</div>
+
 
             {/* Main Content */}
             <main className="max-w-5xl mx-auto px-8 py-12">
