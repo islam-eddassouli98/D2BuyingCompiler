@@ -34,8 +34,8 @@ app.post("/api/process-excel", async (req, res) => {
     const templateWb = await XlsxPopulate.fromFileAsync(templatePath);
     const importWb = await XlsxPopulate.fromFileAsync(importPath);
 
-    const templateSheet = templateWb.sheet("DOOR 040-IT00400007");
-    const importSheet = importWb.sheet("Foglio1");
+    const templateSheet = templateWb.sheets()[0]; 
+    const importSheet = importWb.sheets()[0];
 
     const headers = [];
     let col = 1;
