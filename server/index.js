@@ -10,16 +10,22 @@ app.use(cors());
 app.use(fileUpload());
 
 app.post("/api/process-excel", async (req, res) => {
-  if (!req.files || !req.files.template || !req.files.import) {
-    return res.status(400).send("Both template and import files are required.");
-  }
-
-  const templateFile = req.files.template;
-  const importFile = req.files.import;
-
-  const templatePath = path.join(__dirname, "uploads", templateFile.name);
-  const importPath = path.join(__dirname, "uploads", importFile.name);
-  const outputPath = path.join(__dirname, "outputs", "TEMPLATE_Hyperoom_compilato.xlsx");
+    if (!req.files || !req.files.template || !req.files.import) {
+      return res.status(400).send("Both template and import files are required.");
+    }
+  
+    const uploadsDir = path.join(__dirname, "uploads");
+    const outputsDir = path.join(__dirname, "outputs");
+  
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    fs.mkdirSync(outputsDir, { recursive: true });
+  
+    const templateFile = req.files.template;
+    const importFile = req.files.import;
+  
+    const templatePath = path.join(uploadsDir, templateFile.name);
+    const importPath = path.join(uploadsDir, importFile.name);
+    const outputPath = path.join(outputsDir, "TEMPLATE_Hyperoom_compilato.xlsx");
 
   try {
     await templateFile.mv(templatePath);
