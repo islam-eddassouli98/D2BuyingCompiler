@@ -113,10 +113,13 @@ export default function ExcelProcessor() {
         const formData = new FormData();
         formData.append("template", templateFile.file);
         formData.append("import", importFile.file);
+        formData.append("isWoman", isWoman.toString()); // 👈 aggiunto
+
+
 
         try {
-            const res = await fetch("https://d2buyingcompiler.onrender.com/api/process-excel", {
-            // const res = await fetch("https://d2buyingcompiler.onrender.com/api/process-excel", {
+            // const res = await fetch("http://localhost:5000/api/process-excel", {
+                 const res = await fetch("https://d2buyingcompiler.onrender.com/api/process-excel", {
                 method: "POST",
                 body: formData,
             });
@@ -189,9 +192,9 @@ export default function ExcelProcessor() {
             <header className="bg-black text-white">
                 <div className="max-w-5xl mx-auto px-8 py-8">
                     <div className="flex flex-col items-center gap-4 mb-2">
-                        <img 
-                            src="/logo.svg" 
-                            alt="Logo" 
+                        <img
+                            src="/logo.svg"
+                            alt="Logo"
                             className=" object-contain"
                         />
                     </div>
@@ -207,18 +210,25 @@ export default function ExcelProcessor() {
                 </Button>
             </div>
             {/* Checkbox Donna */}
-<div className="flex items-center gap-2">
-  <input
-    id="isWoman"
-    type="checkbox"
-    className="accent-black w-4 h-4"
-    checked={isWoman}
-    onChange={() => setIsWoman((prev) => !prev)}
-  />
-  <label htmlFor="isWoman" className="text-sm text-gray-800">
-    Import Donna (partenza taglie da 34)
-  </label>
-</div>
+            <div className="flex items-center justify-center py-4">
+                <label htmlFor="isWoman" className="flex items-center gap-3 cursor-pointer select-none">
+                    <div className="relative">
+                        <input
+                            id="isWoman"
+                            type="checkbox"
+                            checked={isWoman}
+                            onChange={() => setIsWoman((prev) => !prev)}
+                            className="sr-only"
+                        />
+                        <div className={`w-11 h-6 rounded-full shadow-inner transition-colors duration-300 ${isWoman ? 'bg-black' : 'bg-gray-300'}`}></div>
+                        <div
+                            className={`dot absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 transform ${isWoman ? 'translate-x-5' : ''}`}
+                        ></div>
+                    </div>
+                    <span className="text-sm text-gray-800 font-medium">Import Donna (Check in caso l'import sia donna) </span>
+                </label>
+            </div>
+
 
 
             {/* Main Content */}
@@ -229,10 +239,10 @@ export default function ExcelProcessor() {
                         {/* Template File Upload */}
                         <Card
                             className={`border-2 transition-all duration-300 hover:shadow-xl ${dragOver === "template"
-                                    ? "border-black bg-gray-50 shadow-lg"
-                                    : templateFile
-                                        ? "border-black bg-black text-white shadow-lg"
-                                        : "border-gray-200 hover:border-gray-400"
+                                ? "border-black bg-gray-50 shadow-lg"
+                                : templateFile
+                                    ? "border-black bg-black text-white shadow-lg"
+                                    : "border-gray-200 hover:border-gray-400"
                                 }`}
                         >
                             <CardContent className="p-8">
@@ -282,10 +292,10 @@ export default function ExcelProcessor() {
                         {/* Import File Upload */}
                         <Card
                             className={`border-2 transition-all duration-300 hover:shadow-xl ${dragOver === "import"
-                                    ? "border-black bg-gray-50 shadow-lg"
-                                    : importFile
-                                        ? "border-black bg-black text-white shadow-lg"
-                                        : "border-gray-200 hover:border-gray-400"
+                                ? "border-black bg-gray-50 shadow-lg"
+                                : importFile
+                                    ? "border-black bg-black text-white shadow-lg"
+                                    : "border-gray-200 hover:border-gray-400"
                                 }`}
                         >
                             <CardContent className="p-8">
@@ -374,10 +384,10 @@ export default function ExcelProcessor() {
                                                 {log.type === "info" && <div className="w-4 h-4 border border-gray-300 rounded-full"></div>}
                                                 <span
                                                     className={`${log.type === "success"
-                                                            ? "text-black font-medium"
-                                                            : log.type === "error"
-                                                                ? "text-red-600"
-                                                                : "text-gray-700"
+                                                        ? "text-black font-medium"
+                                                        : log.type === "error"
+                                                            ? "text-red-600"
+                                                            : "text-gray-700"
                                                         }`}
                                                 >
                                                     {log.message}
@@ -412,7 +422,7 @@ export default function ExcelProcessor() {
                                     </Button>
                                     <Button
                                         onClick={resetApp}
-                                        className="px-8 py-4 border-2 border-black !text-black  rounded-full transition-all duration-300 text-lg font-light bg-transparent" 
+                                        className="px-8 py-4 border-2 border-black !text-black  rounded-full transition-all duration-300 text-lg font-light bg-transparent"
                                     >
                                         Process Another File
                                     </Button>
